@@ -65,6 +65,8 @@ std::vector<Vector2> rightSide =
     {1,0},
 };
 
+std::vector<Vector2> reptileVec;
+std::vector<Vector2> tileVec;
 std::vector<Vector2> resultVec;
 
 void MirrorLeftSide(std::vector<Vector2> *vec)
@@ -96,7 +98,7 @@ void ChangeColor(std::vector<Vector2> *vec)
     }
 }
 
-void CombineVectors(std::vector<Vector2> *vec1, std::vector<Vector2> *vec2)
+void CopyVectors(std::vector<Vector2> *vec1, std::vector<Vector2> *vec2)
 {
     for(int i = 0; i < vec2->size(); i++)
     {
@@ -160,8 +162,8 @@ void closeWindow()
 }
 
 
-int iterationCount = 4;
-int lsysIndex = 0;
+int horizontalCount = 1;
+int verticalCount = 1;
 float offsetX = 400;
 float offsetY = 400;
 float zoom = 1;
@@ -235,7 +237,7 @@ int main(int argc, char *argv[])
                     {
                         offsetX += Event.motion.xrel / zoom;
                         offsetY += Event.motion.yrel / zoom;
-                        RenderFrame(&resultVec);
+                        RenderFrame(&reptileVec);
                     }
                 }                
             }
@@ -246,7 +248,7 @@ int main(int argc, char *argv[])
                 {
                     zoom = 0.1f;
                 }
-                RenderFrame(&resultVec);
+                RenderFrame(&reptileVec);
             }
         }
         if(endApp)
@@ -289,85 +291,103 @@ void PrintVec(std::vector<Vector2> *v)
     std::cout << std::endl;
 }
 
-void Start()
+void CalculateReptile(std::vector<Vector2> *vec)
 {
     //Calculates a single reptile
     MirrorLeftSide(&leftSide);
     leftSide[0].draw = false;
     MirrorRightSide(&rightSide);
-    CombineVectors(&resultVec, &leftSide);
-    CombineVectors(&resultVec, &rightSide);
+    CopyVectors(vec, &leftSide);
+    CopyVectors(vec, &rightSide);
+}
 
-    //Flipped reptail on the left side
-    
+void CalculateTile(std::vector<Vector2> *patternVec, std::vector<Vector2> *resultVec)
+{
     std::vector<Vector2> copy;
-    CopyVec(&resultVec, &copy);
+    CopyVec(patternVec, &copy);
     RotateVec(&copy, PI);
     MoveVec(&copy,1,1);
-    CombineVectors(&resultVec, &copy);
+    CopyVectors(resultVec, &copy);
 
     for(int i = 0; i < 3; i++)
     {
         std::vector<Vector2> copy;
-        CopyVec(&resultVec, &copy);
+        CopyVec(resultVec, &copy);
         RotateVec(&copy,PI / 2 * (i+1));
-        CombineVectors(&resultVec, &copy);
+        CopyVectors(resultVec, &copy);
     }
-    
-    std::vector<Vector2> final;
-    for(int i = 0; i < 3; i++)
+}
+
+void CalculatePattern(std::vector<Vector2> *patternVec, std::vector<Vector2> *resultVec)
+{
+    resultVec->clear();
+    for(int i = 0; i < horizontalCount; i++)
     {
-        for(int k = 0; k < 3; k++)
+        for(int k = 0; k < verticalCount; k++)
         {
             std::vector<Vector2> copy;
-            CopyVec(&resultVec, &copy);
+            CopyVec(patternVec, &copy);
             MoveVec(&copy, i * 2, k * 2);
-            CombineVectors(&final, &copy);
+            CopyVectors(resultVec, &copy);
         }
     }
-    resultVec = {};
-    CopyVec(&final, &resultVec);
-    RenderFrame(&resultVec);
+}
+
+void Start()
+{
+    CalculateReptile(&reptileVec); //Single reptile
+    RenderFrame(&reptileVec);
+    //CalculateTile(&reptileVec, &tileVec); //Pattern of eight
+    //CalculatePattern(&tileVec, &resultVec);
+    //RenderFrame(&reptileVec);
 }
 
 void Update()
 {
     if(GetActionDownByName("Left"))
     {
-
+        horizontalCount--;   
+        CalculatePattern(&tileVec, &resultVec);
+        RenderFrame(&reptileVec);
     }
     else if(GetActionDownByName("Right"))
     {
-
+        horizontalCount++;
+        CalculatePattern(&tileVec, &resultVec);
+        RenderFrame(&reptileVec);
     }
     else if(GetActionDownByName("Up"))
     {
-
+        verticalCount++;
+        CalculatePattern(&tileVec, &resultVec);
+        RenderFrame(&reptileVec);
     }
     else if(GetActionDownByName("Down"))
     {
-
+        verticalCount--;
+        CalculatePattern(&tileVec, &resultVec);
+        RenderFrame(&reptileVec);
     }
 
     if(GetActionByName("Up2"))
     {
         offsetY += deltaTime * 100;
-        RenderFrame(&resultVec);
+        RenderFrame(&reptileVec);
     }
     else if(GetActionByName("Down2"))
     {
         offsetY -= deltaTime * 100;
-        RenderFrame(&resultVec);
+        RenderFrame(&reptileVec);
     }
 
     if(GetActionByName("Left2"))
     {
         offsetX += deltaTime * 100;
-        RenderFrame(&resultVec);
+        RenderFrame(&reptileVec);
     }
     else if(GetActionByName("Right2"))
     {
         offsetX -= deltaTime * 100;
-        RenderFrame(&resultVec);
+        RenderFrame(&reptileVec);
     }
 }
