@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
                     {
                         offsetX += Event.motion.xrel / zoom;
                         offsetY += Event.motion.yrel / zoom;
-                        RenderFrame(&reptileVec);
+                        RenderFrame(&resultVec);
                     }
                 }                
             }
@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
                 {
                     zoom = 0.1f;
                 }
-                RenderFrame(&reptileVec);
+                RenderFrame(&resultVec);
             }
         }
         if(endApp)
@@ -336,10 +336,9 @@ void CalculatePattern(std::vector<Vector2> *patternVec, std::vector<Vector2> *re
 void Start()
 {
     CalculateReptile(&reptileVec); //Single reptile
-    RenderFrame(&reptileVec);
-    //CalculateTile(&reptileVec, &tileVec); //Pattern of eight
-    //CalculatePattern(&tileVec, &resultVec);
-    //RenderFrame(&reptileVec);
+    CalculateTile(&reptileVec, &tileVec); //Pattern of eight
+    CalculatePattern(&tileVec, &resultVec);
+    RenderFrame(&resultVec);
 }
 
 void Update()
@@ -348,46 +347,46 @@ void Update()
     {
         horizontalCount--;   
         CalculatePattern(&tileVec, &resultVec);
-        RenderFrame(&reptileVec);
+        RenderFrame(&resultVec);
     }
     else if(GetActionDownByName("Right"))
     {
         horizontalCount++;
         CalculatePattern(&tileVec, &resultVec);
-        RenderFrame(&reptileVec);
+        RenderFrame(&resultVec);
     }
     else if(GetActionDownByName("Up"))
     {
         verticalCount++;
         CalculatePattern(&tileVec, &resultVec);
-        RenderFrame(&reptileVec);
+        RenderFrame(&resultVec);
     }
     else if(GetActionDownByName("Down"))
     {
         verticalCount--;
         CalculatePattern(&tileVec, &resultVec);
-        RenderFrame(&reptileVec);
+        RenderFrame(&resultVec);
     }
 
     if(GetActionByName("Up2"))
     {
         offsetY += deltaTime * 100;
-        RenderFrame(&reptileVec);
+        RenderFrame(&resultVec);
     }
     else if(GetActionByName("Down2"))
     {
         offsetY -= deltaTime * 100;
-        RenderFrame(&reptileVec);
+        RenderFrame(&resultVec);
     }
 
     if(GetActionByName("Left2"))
     {
         offsetX += deltaTime * 100;
-        RenderFrame(&reptileVec);
+        RenderFrame(&resultVec);
     }
     else if(GetActionByName("Right2"))
     {
         offsetX -= deltaTime * 100;
-        RenderFrame(&reptileVec);
+        RenderFrame(&resultVec);
     }
 }
